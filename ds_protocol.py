@@ -14,7 +14,7 @@ from collections import namedtuple
 
 # Namedtuple to hold the values retrieved from json messages.
 # TODO: update this named tuple to use DSP protocol keys
-DataTuple = namedtuple('DataTuple', ['type','message','token'])
+DataTuple = namedtuple('DataTuple', ['type','message','token','messages'])
 
 def join_msg(username, password):
   msg = {
@@ -45,6 +45,34 @@ def bio_msg(token, bio):
           "entry": bio,
           "timestamp": str(time.time())
         }
+  }
+  return json.dumps(msg)
+
+
+def direct_message_msg(token, message, recipient):
+  msg = {
+          "token": token,
+          "directmessage": {
+                "entry": message,
+                "recipient": recipient,
+                "timestamp": str(time.time())
+          }
+  }
+  return json.dumps(msg)
+
+
+def direct_message_new_msg(token):
+  msg = {
+          "token": token,
+          "directmessage": "new"
+  }
+  return json.dumps(msg)
+
+
+def direct_message_all_msg(token):
+  msg = {
+          "token": token,
+          "directmessage": "all"
   }
   return json.dumps(msg)
 
