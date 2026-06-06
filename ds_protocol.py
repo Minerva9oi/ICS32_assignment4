@@ -77,29 +77,32 @@ def direct_message_all_msg(token):
   return json.dumps(msg)
 
 
-def extract_json(json_msg:str) -> DataTuple:
-  '''
-  Call the json.loads function on a json string and convert it to a DataTuple object
-  
-  TODO: replace the pseudo placeholder keys with actual DSP protocol keys
-  '''
-  try:
-    json_obj = json.loads(json_msg)
-    response = json_obj["response"]
+def extract_json(json_msg: str) -> DataTuple:
+    try:
+        json_obj = json.loads(json_msg)
+        response = json_obj["response"]
 
-    response_type = response["type"]
-    message = response["message"]
+        response_type = response["type"]
 
-    if "token" in response:
-      token = response ["token"]
-    else:
-      token = ""
-    return DataTuple(response_type, message, token)
-  
-  except json.JSONDecodeError:
-    print("Json cannot be decoded.")
-    return DataTuple("error", "Json cannot be decoded.", "")
-  
-  except KeyError:
-    print("Invalid DSP response format")
-    return DataTuple("error", "Invalid DSP response format", "")
+        message = ""
+        token = ""
+        messages = []
+
+        if "message" in response:
+            message = response["message"]
+
+        if "token" in response:
+            token = response["token"]
+
+        if "messages" in response:
+            messages = response["messages"]
+
+        return DataTuple(response_type, message, token, messages)
+
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.")
+        return DataTuple("error", "Json cannot be decoded.", "", [])
+
+    except KeyError:
+        print("Invalid DSP response format")
+        return DataTuple("error", "Invalid DSP response format", "", [])
