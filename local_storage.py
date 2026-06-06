@@ -82,10 +82,9 @@ class LocalStorage:
 
         return []
 
-    def add_direct_message(self, direct_message):
-        contact = direct_message.recipient
-        sender = direct_message.recipient
-        message = direct_message.message
-        timestamp = direct_message.timestamp
+    def add_sent_message(self, recipient, message, timestamp=None):
+        self.add_message(recipient, self.username, message, timestamp)
 
-        self.add_message(contact, sender, message, timestamp)
+
+    def add_received_message(self, sender, message, timestamp=None):
+        self.add_message(sender, sender, message, timestamp)
