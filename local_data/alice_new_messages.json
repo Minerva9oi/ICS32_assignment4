@@ -1,0 +1,15 @@
+{
+    "username": "alice_new",
+    "friends": [
+        "bob_new"
+    ],
+    "messages": {
+        "bob_new": [
+            {
+                "sender": "me",
+                "message": "hi bob_new",
+                "timestamp": "1780791103.420972"
+            }
+        ]
+    }
+}

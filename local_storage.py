@@ -11,6 +11,7 @@ from pathlib import Path
 class LocalStorage:
     def __init__(self, username, folder="local_data"):
         self.username = username
+
         self.folder = Path(folder)
         self.folder.mkdir(exist_ok=True)
 
@@ -31,19 +32,25 @@ class LocalStorage:
             data = json.load(file)
             file.close()
 
-            self.friends = data.get("friends", [])
-            self.messages = data.get("messages", {})
+            if "friends" in data:
+                self.friends = data["friends"]
+            else:
+                self.friends = []
+
+            if "messages" in data:
+                self.messages = data["messages"]
+            else:
+                self.messages = {}
 
         except Exception:
             self.friends = []
             self.messages = {}
 
     def save(self):
-        data = {
-            "username": self.username,
-            "friends": self.friends,
-            "messages": self.messages
-        }
+        data = {}
+        data["username"] = self.username
+        data["friends"] = self.friends
+        data["messages"] = self.messages
 
         file = open(self.path, "w")
         json.dump(data, file, indent=4)
@@ -65,26 +72,30 @@ class LocalStorage:
         self.add_friend(contact)
 
         if timestamp is None:
-            timestamp = str(time.time())
+            new_timestamp = str(time.time())
+        else:
+            new_timestamp = timestamp
 
-        new_message = {
-            "sender": sender,
-            "message": message,
-            "timestamp": timestamp
-        }
+        new_message = {}
+        new_message["sender"] = sender
+        new_message["message"] = message
+        new_message["timestamp"] = new_timestamp
 
         self.messages[contact].append(new_message)
+
         self.save()
 
     def get_messages(self, contact):
         if contact in self.messages:
-            return self.messages[contact]
+            contact_messages = self.messages[contact]
+            return contact_messages
+        else:
+            return []
 
-        return []
+    def add_direct_message(self, direct_message):
+        contact = direct_message.recipient
+        sender = direct_message.recipient
+        message = direct_message.message
+        timestamp = direct_message.timestamp
 
-    def add_sent_message(self, recipient, message, timestamp=None):
-        self.add_message(recipient, self.username, message, timestamp)
-
-
-    def add_received_message(self, sender, message, timestamp=None):
-        self.add_message(sender, sender, message, timestamp)
+        self.add_message(contact, sender, message, timestamp)
